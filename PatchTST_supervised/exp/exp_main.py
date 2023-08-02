@@ -17,6 +17,9 @@ import warnings
 import matplotlib.pyplot as plt
 import numpy as np
 
+import mlflow
+import mlflow.pytorch
+
 warnings.filterwarnings('ignore')
 
 class Exp_Main(Exp_Basic):
@@ -213,6 +216,7 @@ class Exp_Main(Exp_Basic):
 
         best_model_path = path + '/' + 'checkpoint.pth'
         self.model.load_state_dict(torch.load(best_model_path))
+        mlflow.pytorch.log_model(self.model, "model")
 
         return self.model
 
@@ -305,6 +309,9 @@ class Exp_Main(Exp_Basic):
         f.write('\n')
         f.write('\n')
         f.close()
+        mlflow.log_metric("test_mse", mse)
+        mlflow.log_metric("test_mae", mae)
+        mlflow.log_metric("test_rse", rse)
 
         # np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe,rse, corr]))
         np.save(folder_path + 'pred.npy', preds)
