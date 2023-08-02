@@ -1,8 +1,8 @@
 name: patchtst_supervised
 
 docker_env:
-  image: keras-tf2-example
-  volumes: ["/home/deploy/workspace/mlflow/patchtst/mlruns:/mlflow/tmp/mlruns"]
+  image: patchtst_supervised
+  volumes: ["/home/deploy/workspace/mlflow/patchtst/patchtst_supervised/mlruns:/mlflow/tmp/mlruns","/home/deploy/workspace/mlflow/PatchTST/PatchTST_supervised/all_six_datasets/weather/weather.csv:/dataset/weather.csv"]
   environment: [["MLFLOW_S3_ENDPOINT_URL","http://192.168.11.24:9000"],["AWS_ACCESS_KEY_ID","minio"],["AWS_SECRET_ACCESS_KEY","minio123"]]
 
 entry_points:
@@ -11,12 +11,13 @@ entry_points:
       seq_len:        {type: int, default: 336}
       pred_len:       {type: int, default: 96}
       random_seed:    {type: int, default: 2021}
-      root_path:      {type: string, default: "./dataset"}
+      root_path:      {type: string, default: "/dataset"}
       data_path:      {type: string, default: "weather.csv"}
       model_id:       {type: string, default: "weather_336_96"}
-      model_name:     {type: string, default: "weather"}
-      features:       {type: string: default: "M"}
-      inc_in:         {type: int, default: 21}
+      model_name:     {type: string, default: "PatchTST"}
+      data_name:      {type: string, default: "custom"}
+      features:       {type: string, default: "M"}
+      enc_in:         {type: int, default: 21}
       e_layers:       {type: int, default: 3}
       n_heads:        {type: int, default: 16}
       d_model:        {type: int, default: 128}
@@ -34,8 +35,8 @@ entry_points:
     command: "python -u run_longExp.py \
           --random_seed {random_seed} \
           --is_training 1 \
-          --root_path {root_path_name} \
-          --data_path {data_path_name} \
+          --root_path {root_path} \
+          --data_path {data_path} \
           --model_id {model_id} \
           --model {model_name} \
           --data {data_name} \
@@ -53,6 +54,7 @@ entry_points:
           --patch_len {patch_len} \
           --stride {stride} \
           --des {des} \
-          --train_epochs {train_epochs}\
-          --patience {patience}\
+          --train_epochs {train_epochs} \
+          --patience {patience} \
+          --num_workers 1 \
           --itr 1 --batch_size {batch_size} --learning_rate {learning_rate}"
